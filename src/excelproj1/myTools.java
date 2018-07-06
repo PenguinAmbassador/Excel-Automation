@@ -8,6 +8,7 @@ package excelproj1;
 import java.io.File;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 /**
@@ -24,7 +25,7 @@ public class myTools {
                     Cell oldCell = currentRow.getCell(j);
                     //First line creates cell, second line copies old cell into new cell
                     Cell newCell = currentRow.createCell(j + shiftCount);//let it be noted that I removed second argument oldCell.getCellTypeEnum()
-                    cloneCellStringValue(oldCell,newCell);
+                    cloneCellValue(oldCell,newCell);
                 }
             }else{//if shiftCount is negative push left
                 //TODO create loop to push cells left
@@ -34,9 +35,47 @@ public class myTools {
     }
     //will this work between two different excel workbooks? Please test.
     //srcSheet and targSheet will be the same if you are working within one sheet
-    void copyRows(Sheet srcSheet,Sheet targSheet, int rowStartIndex, int rowEndIndex, int colStartIndex, int colEndIndex){
-        for(int i = rowStartIndex; i < rowEndIndex; i++){ 
-            Row srcRow = srcSheet.getRow(i); 
+    static void copyCells(Sheet srcSheet,Sheet targSheet, int fromColStartIndex, int fromRowStartIndex, int fromColEndIndex, int fromRowEndIndex, int toColStartIndex, int toRowStartIndex){
+        //Every time we get a cell from old sheet, we need to account for the offset between old and new sheets based on starting places. 
+        int rowOffset = (fromRowStartIndex - toRowStartIndex);
+        int cellOffset = (fromColStartIndex - toColStartIndex);
+        
+        for(int row = toRowStartIndex; row < (toRowStartIndex + (fromRowEndIndex - fromRowStartIndex)); row++){  
+            Row srcRow = srcSheet.getRow(row + rowOffset); 
+            Row targRow;
+            if(targSheet.getRow(row)==null){
+                System.out.println("");
+                targRow = targSheet.createRow(row);
+            }else{
+                targRow = targSheet.getRow(row);
+            }
+            System.out.println("row: " + row + " rowOffSet: " + (row+rowOffset));
+            for(int col = toColStartIndex; col < (toColStartIndex + (fromColEndIndex - fromColStartIndex)); col++){
+                try{
+                    Cell srcCell = srcRow.getCell(col + cellOffset); //track source cell in Weekly Report
+                    if(srcCell!=null && targRow.getCell(col)!=null){ //none are null
+                        System.out.println("row/col: " + row + "/"  + col + "colOffset: " + (col+cellOffset));
+                        Cell targCell = targRow.getCell(col);//offest for where you aim to put the copied cells
+                        cloneCellValue(srcCell, targCell);
+                    }else if(srcCell!=null && targRow.getCell(col)==null){//target is null
+                        Cell targCell = targRow.createCell(col);
+                        cloneCellValue(srcCell, targCell);
+                    }else{//both are null
+                        //blank cells. ultimately needs to be fixed by a fillBlanks() method that pulls names from emails
+                    }
+                }catch(Exception e){
+                    System.out.println("Failed at i/j " + row + "/" + col);
+                    e.printStackTrace();
+                }
+                
+            }
+        }
+    }
+    
+    //Not sure if this actually works! I just removed srcSheet param
+    static void copyCells(Sheet targSheet, int cellStartIndex, int rowEndIndex, int colStartIndex, int colEndIndex){
+        for(int i = cellStartIndex; i < rowEndIndex; i++){ 
+            Row srcRow = targSheet.getRow(i); 
             Row targRow;
             if(targSheet.getRow(i)==null){
                 targRow = targSheet.createRow(i); 
@@ -44,20 +83,28 @@ public class myTools {
                 targRow = targSheet.getRow(i);
             }
             for(int j = colStartIndex; j < colEndIndex; j++){
-                Cell srcCell = srcRow.getCell(j); //track source cell in Weekly Report
-                if(srcCell!=null && targRow.getCell(j)!=null){ //none are null
+                
+                try{
+                    Cell srcCell = srcRow.getCell(j);
+                    if(srcCell!=null && targRow.getCell(j)!=null){ //none are null
                     Cell targCell = targRow.getCell(j);
-                    cloneCellStringValue(srcCell, targCell);
-                }else if(srcCell!=null && targRow.getCell(j)==null){//target is null
-                    Cell targCell = targRow.createCell(j);
-                    cloneCellStringValue(srcCell, targCell);
-                }else{//both are null
-                    //blank cells. ultimately needs to be fixed by a fillBlanks() method that pulls names from emails
+                    cloneCellValue(srcCell, targCell);
+                    }else if(srcCell!=null && targRow.getCell(j)==null){//target is null
+                        Cell targCell = targRow.createCell(j);
+                        cloneCellValue(srcCell, targCell);
+                    }else{//both are null
+                        //blank cells. ultimately needs to be fixed by a fillBlanks() method that pulls names from emails
+                    }
+                } catch(Exception e){
+                    System.out.println("Failed at i/j " + i + "/" + j);
+                    e.printStackTrace();
                 }
+                
             }
         }
     }
     
+    //TODO I really wanna replace this logic with functionality based on REAL index
     //you can enter the exact row/col numbers and method will adjust for the index.
     static void searchColumn(Sheet targSheet, int targColumnIndex, int targRowStartIndex, int targRowEndIndex, Sheet srcSheet, int srcColumnIndex, int srcRowStartIndex, int srcRowEndIndex){
         for(int i = targRowStartIndex-1; i < targRowEndIndex; i++){ 
@@ -89,8 +136,53 @@ public class myTools {
         }
     }
     //NEXT TODO: create copyCell, copyRow, copyHeader
-    void cloneCellStringValue(Cell oldCell, Cell newCell){
-        newCell.setCellValue(oldCell.getStringCellValue());
+    /**
+     * Copies values from one cell to the next. Currently only supports string/numeric
+     * @param oldCell
+     * @param newCell 
+     */
+    static void cloneCellValue(Cell oldCell, Cell newCell){
+        System.out.println(oldCell.getCellTypeEnum().toString());
+        try{
+            if(oldCell.getCellTypeEnum().toString() == "STRING"){
+                newCell.setCellValue(oldCell.getStringCellValue());
+            } else if(oldCell.getCellTypeEnum().toString() == "NUMERIC"){
+                newCell.setCellValue(oldCell.getNumericCellValue());
+            }
+        }catch(Exception e){
+            e.printStackTrace();
+            System.out.println("ERR CAUGHT: MyTools cloneCellValue() - data type may not yet be supported");
+        }
+        
         //there is a better version of this on stack exchange
+    }
+    static void fixNames(Sheet weeklyReport){
+        String firstName = "";
+        String lastName = "";
+        for(int i = 0; i < weeklyReport.getPhysicalNumberOfRows(); i++){
+            //check if the names are empty (col Index 1 & 2)
+            Row currentRow = weeklyReport.getRow(i);
+            for(int j = 1; j <= 2; j++){
+                Cell currentCell = currentRow.getCell(j);
+                if(currentCell==null && (j==1)){
+                    //get first name from email (col index 3)
+                    int k = 0;
+                    while(currentCell.getStringCellValue().charAt(k)!= '.'){//grab all letters before .
+                        String newLetter = new StringBuilder().append(currentCell.getStringCellValue().charAt(k++)).toString();//POSSIBLE PROBLEM your k++; grab char, turn to string with strBuilder
+                        firstName = firstName.concat(newLetter);
+                    }
+                } else if(currentCell==null && (j==2)){
+                    //get first name from email (col index 3)
+                    int k = 0;
+                    while(currentCell.getStringCellValue().charAt(k)!= '@'){//grab all letters before @
+                        String newLetter = new StringBuilder().append(currentCell.getStringCellValue().charAt(k++)).toString();//grab char, turn to string with strBuilder
+                        lastName = lastName.concat(newLetter);
+                    }
+                }
+            }
+            //TODO: save firstlastname to col indices 1&2
+        }
+        
+        
     }
 }
