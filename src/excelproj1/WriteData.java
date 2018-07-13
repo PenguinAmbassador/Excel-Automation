@@ -16,6 +16,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -24,46 +25,31 @@ import java.util.List;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import tutorial.Employee;
 
+/**
+ * TODO: VERIFY TOTALS, ADD FORMULA OPTION TO GUI?,AUTOMATICALLY ADD FIELD TESTERS
+ * @author WoodmDav
+ */
 public class WriteData {
-
-    private static String[] columns = {"Name", "Email", "Date Of Birth", "Salary"};
-    private static List<Employee> employees =  new ArrayList<>();
-
-	// Initializing employees data to insert into the excel file
-    static {
-        Calendar dateOfBirth = Calendar.getInstance();
-        dateOfBirth.set(1992, 7, 21);
-        employees.add(new Employee("Rajeev Singh", "rajeev@example.com", 
-                dateOfBirth.getTime(), 1200000.0));
-
-        dateOfBirth.set(1965, 10, 15);
-        employees.add(new Employee("Thomas cook", "thomas@example.com", 
-                dateOfBirth.getTime(), 1500000.0));
-
-        dateOfBirth.set(1987, 4, 18);
-        employees.add(new Employee("Steve Maiden", "steve@example.com", 
-                dateOfBirth.getTime(), 1800000.0));
-    }
-
     public static void main(String[] args) throws IOException, InvalidFormatException {
+        System.out.println("Running Main WriteData");
         // Obtain a Connectivity Report from xlsx
         //This report should be a week older than the weekly report
-        Workbook connReportOld = WorkbookFactory.create(new File("src\\ConReport040918.xlsx"));
+        Workbook connReportOld = WorkbookFactory.create(new File("src\\ConnectivityReport07-02-18.xlsx"));
         Workbook connReport = connReportOld;//delete this... didn't work
         //Obtain Weekly Report. Used to build Connectivity Report.
-        Workbook weeklyReport = WorkbookFactory.create(new File("src\\WeeklyReport041618.xlsx"));
+        Workbook weeklyReport = WorkbookFactory.create(new File("src\\Weekly_Report07-09-18.xlsx"));
         
 //        try{
-//            if(connReport.getSheetAt(4).getSheetName().equals("Apr 16")){
+//            if(connReport.getSheetAt(4).getSheetName().equals("Jul 13")){
 //                connReport.removeSheetAt(4); //Delete this try/catch later, just making it so i can test faster
 //            }
 //        }catch(Exception e){
 //        }
         
         //Establish old week and new week to prepare to copy headers
-//        String newSheetName = "Apr 16";//FIX replace with Date 
+//        String newSheetName = myTools.getDate();//getDate() gives you Jul 07 or something like it
 //        connReport.createSheet(newSheetName);
-//        connReport.setSheetOrder("Apr 16", 4);//move new sheet in front of other weeks
+//        connReport.setSheetOrder(myTools.getDate(), 4);//move new sheet in front of other weeks
 //        Sheet newSheet = connReport.getSheetAt(4);//grab the new sheet
 //        Sheet lastWeekSheet = connReport.getSheetAt(5);//grab previous week
 //        Sheet weeklySheet = weeklyReport.getSheetAt(0);//Grab the only sheet in Weekly Report
@@ -109,32 +95,153 @@ public class WriteData {
 //            }
 //        }
 //        
-
+//
 //        System.out.println("Step Three");
 //        
 //        //STEP 3: Copy new week into Generated Report sheet
-//        Sheet newSheet = connReport.getSheet("Apr 16");
+//        //Sheet newSheet = connReport.getSheet(getDate());
 //        Sheet CurrentReport = connReport.getSheet("Current Report");
 //        
 //        //I want to copy cells A2 to K2 all the way through to bottom
 //        //COPY FROM:  A2 = row0col1 -> K2 = 11, 1 COPY TO: B2 row1col1
 //        myTools.copyCells(newSheet, CurrentReport, 0, 1, 11, newSheet.getPhysicalNumberOfRows(), 1,1);
-        
+        //TODO: Generated report doesn't have dates copying over.
+
         //Step 4: formula junk
         Sheet genRep = connReport.getSheet("Generated Report");//store generated report
         System.out.println("Step 4");
-        //for(int row = 8; )
-            Row targRow = genRep.getRow(9);// row index 8 is where the data tables start
-            //
-            for(int col = targRow.getPhysicalNumberOfCells(); col >= 0; col--){
-                try{
-                    Cell targCell = targRow.getCell(col);
-                    System.out.println("col: " + col);
-                    System.out.println(targCell.getCellFormula());
-                }catch(Exception e){
-                    System.out.println("ERROR");
-                }
+        
+        //4.1: GET COL INDEX
+        int newColIndex = 0;
+        Row targRow = genRep.getRow(12);// row index 8 is where the data tables start
+        //Going to count down from the end of the row moving to the left until I hit a formula.
+        //Once I don't have any errors, then that means I am on the last column and can add a new column to the right
+        for(int col = targRow.getPhysicalNumberOfCells()+50; col >= 0; col--){
+            try{
+                System.out.println("check1: " + col);
+                Cell targCell = targRow.getCell(col);
+                String checkForm = targCell.getCellFormula();
+                System.out.println(checkForm);
+            if(checkForm.length() > 0){
+                newColIndex = col + 1;
+                col = -1;//stop loop
             }
+            }catch(Exception NullPointerException){
+                //null cell
+            }
+        }
+        
+        //4.2 COPY column over
+        System.out.println("check3: " + newColIndex);
+        int rowIndex = 11;
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex).setCellValue(myTools.getDate());
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.FRIDGE_NEW);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.FRIDGE_OLD);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.RAC_X_NEW);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.RAC_X_OLD);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.RAC_GEN2_NEW);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.RAC_GEN2_OLD);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.STROMBO_NEW);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.STROMBO_OLD);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.DEHUM_NEW);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.DEHUM_OLD);
+        
+        rowIndex++;//skip a row
+        
+        targRow = genRep.getRow(rowIndex);//row index 23
+        rowIndex++;
+        targRow.createCell(newColIndex).setCellValue(myTools.getDate());
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.FRIDGE_TOTAL);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.RAC_TOTAL);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex);
+        targRow.getCell(newColIndex).setCellFormula(Constants.STROMBO_TOTAL);
+        targRow = genRep.getRow(rowIndex);
+        rowIndex++;
+        targRow.createCell(newColIndex).setCellFormula(Constants.DEHUM_TOTAL);
+        
+        rowIndex++;//skip a row
+        
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellValue(myTools.getDate());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.TARGET);
+        
+        rowIndex++;//skip row
+        
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.TOTAL);
+        
+        rowIndex++; //skip row  
+        rowIndex++;
+        
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellValue(myTools.getDate());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.OLDFW_TOTAL);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.NEWFW_TOTAL);
+        
+        rowIndex++;//skip row
+        
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellValue(myTools.getDate());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.FRIDGE_FW1_PW1MA076);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.FRIDGE_FW2_PW1MA079);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.RAC_FW1_PW1RS326);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.RAC_FW2_v4310);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.RAC_FW3_v4420);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.RAC_FW4_v453b);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.RAC_FW5_v4551);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.RAC_FW6_v4642);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.STROMBO_FW1_PW3RS017_161005a);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.STROMBO_FW2_v4310);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.STROMBO_FW3_v4420);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.STROMBO_FW4_v453b);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.STROMBO_FW5_v4551);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.STROMBO_FW6_v4642);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.DEHUM_FW1_v4310);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.DEHUM_FW2_v4420);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.DEHUM_FW3_v453b);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.DEHUM_FW4_v4551);
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.DEHUM_FW5_v4642);
+        
+        rowIndex++; //skip row
+        
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(Constants.FW_TOTAL);
+        
         
         
         
@@ -144,7 +251,7 @@ public class WriteData {
         
         
         // Write the output to the file
-        FileOutputStream fileOut = new FileOutputStream("ConReport042318 6.xlsx");
+        FileOutputStream fileOut = new FileOutputStream("ConReport042318 5.xlsx");
         connReport.write(fileOut);
         
 //        //attempt to fix autoSizeColumn. There was a stackexchange saying it needed to be after .write
@@ -156,7 +263,6 @@ public class WriteData {
         // Closing the workbook
         connReport.close();
     }
-    
     
     
 }

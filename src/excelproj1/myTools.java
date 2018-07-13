@@ -6,6 +6,8 @@
 package excelproj1;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
@@ -144,10 +146,12 @@ public class myTools {
     static void cloneCellValue(Cell oldCell, Cell newCell){
         System.out.println(oldCell.getCellTypeEnum().toString());
         try{
-            if(oldCell.getCellTypeEnum().toString() == "STRING"){
+            if(oldCell.getCellTypeEnum().toString().equals("STRING")){
                 newCell.setCellValue(oldCell.getStringCellValue());
-            } else if(oldCell.getCellTypeEnum().toString() == "NUMERIC"){
+            } else if(oldCell.getCellTypeEnum().toString().equals("NUMERIC")){
                 newCell.setCellValue(oldCell.getNumericCellValue());
+            }else if(oldCell.getCellTypeEnum().toString().equals("FORMULA")){
+                newCell.setCellValue(oldCell.getCellFormula());
             }
         }catch(Exception e){
             e.printStackTrace();
@@ -182,7 +186,19 @@ public class myTools {
             }
             //TODO: save firstlastname to col indices 1&2
         }
-        
-        
+    }
+    
+    /**
+    * Returns the date in format of "Jul 06"
+    * @return 
+    */
+    public static String getDate(){
+        Date today = new Date();
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
+        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
+        String month = monthFormat.format(today);
+        String day = dayFormat.format(today);
+
+        return(month + " " + day); 
     }
 }
