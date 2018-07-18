@@ -18,8 +18,24 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
  * @author WoodmDav
  */
 public class myTools {
+    
+    public static String indexToLetter(int index){
+        String let = "";
+        char tempChar;
+        if((index/26)>0){
+            tempChar = (char)(index/26 + 64);//1 less so that we start with AA instead of BA
+            let = let.concat(Character.toString(tempChar));
+            tempChar = (char)(index%26 + 65);
+            let = let.concat(Character.toString(tempChar));
+        }else{
+            tempChar = (char)(index + 65); 
+            let = Character.toString(tempChar);
+        }
+        return let;
+    }
+    
     //You should plug in sheet.getPhysicalNumberOfRows as rowEndIndex if you want to iterate all rows.
-    void shiftColumns(Sheet sheet, int rowStartIndex, int rowEndIndex, int cellIndex, int shiftCount) {
+    public static void shiftColumns(Workbook workbook, Sheet sheet, int cellIndex, int rowStartIndex, int rowEndIndex, int shiftCount) {
         for(int i = rowStartIndex; i < rowEndIndex; i++){//This should iterate through rows specified by parameters
             Row currentRow = sheet.getRow(i);
             if(shiftCount > 0){//if shiftCount is positive push right
@@ -27,7 +43,10 @@ public class myTools {
                     Cell oldCell = currentRow.getCell(j);
                     //First line creates cell, second line copies old cell into new cell
                     Cell newCell = currentRow.createCell(j + shiftCount);//let it be noted that I removed second argument oldCell.getCellTypeEnum()
-                    cloneCellValue(oldCell,newCell);
+                    
+                    if(oldCell != null){
+                        cloneCellValue(oldCell, newCell, workbook);
+                    }
                 }
             }else{//if shiftCount is negative push left
                 //TODO create loop to push cells left
@@ -37,7 +56,8 @@ public class myTools {
     }
     //will this work between two different excel workbooks? Please test.
     //srcSheet and targSheet will be the same if you are working within one sheet
-    static void copyCells(Sheet srcSheet,Sheet targSheet, int fromColStartIndex, int fromRowStartIndex, int fromColEndIndex, int fromRowEndIndex, int toColStartIndex, int toRowStartIndex){
+    //Bug won't work for shifting cells, need to use shift method
+    static void copyCells(Workbook workbook, Sheet srcSheet,Sheet targSheet, int fromColStartIndex, int fromRowStartIndex, int fromColEndIndex, int fromRowEndIndex, int toColStartIndex, int toRowStartIndex){
         //Every time we get a cell from old sheet, we need to account for the offset between old and new sheets based on starting places. 
         int rowOffset = (fromRowStartIndex - toRowStartIndex);
         int cellOffset = (fromColStartIndex - toColStartIndex);
@@ -58,11 +78,11 @@ public class myTools {
                     if(srcCell!=null && targRow.getCell(col)!=null){ //none are null
                         System.out.println("row/col: " + row + "/"  + col + "colOffset: " + (col+cellOffset));
                         Cell targCell = targRow.getCell(col);//offest for where you aim to put the copied cells
-                        cloneCellValue(srcCell, targCell);
+                        cloneCellValue(srcCell, targCell, workbook);
                     }else if(srcCell!=null && targRow.getCell(col)==null){//target is null
                         Cell targCell = targRow.createCell(col);
-                        cloneCellValue(srcCell, targCell);
-                    }else{//both are null
+                        cloneCellValue(srcCell, targCell, workbook);
+                    }else{//src is empty or both are null
                         //blank cells. ultimately needs to be fixed by a fillBlanks() method that pulls names from emails
                     }
                 }catch(Exception e){
@@ -74,37 +94,6 @@ public class myTools {
         }
     }
     
-    //Not sure if this actually works! I just removed srcSheet param
-    static void copyCells(Sheet targSheet, int cellStartIndex, int rowEndIndex, int colStartIndex, int colEndIndex){
-        for(int i = cellStartIndex; i < rowEndIndex; i++){ 
-            Row srcRow = targSheet.getRow(i); 
-            Row targRow;
-            if(targSheet.getRow(i)==null){
-                targRow = targSheet.createRow(i); 
-            }else{
-                targRow = targSheet.getRow(i);
-            }
-            for(int j = colStartIndex; j < colEndIndex; j++){
-                
-                try{
-                    Cell srcCell = srcRow.getCell(j);
-                    if(srcCell!=null && targRow.getCell(j)!=null){ //none are null
-                    Cell targCell = targRow.getCell(j);
-                    cloneCellValue(srcCell, targCell);
-                    }else if(srcCell!=null && targRow.getCell(j)==null){//target is null
-                        Cell targCell = targRow.createCell(j);
-                        cloneCellValue(srcCell, targCell);
-                    }else{//both are null
-                        //blank cells. ultimately needs to be fixed by a fillBlanks() method that pulls names from emails
-                    }
-                } catch(Exception e){
-                    System.out.println("Failed at i/j " + i + "/" + j);
-                    e.printStackTrace();
-                }
-                
-            }
-        }
-    }
     
     //TODO I really wanna replace this logic with functionality based on REAL index
     //you can enter the exact row/col numbers and method will adjust for the index.
@@ -133,7 +122,7 @@ public class myTools {
 //            System.out.println("ENDJLOOP");
             if(newFieldTester){
 //                System.out.println("SUCCESS!");
-                System.out.println(targCell.getStringCellValue());
+                System.out.println("New Field Tester: " + targCell.getStringCellValue());
             }
         }
     }
@@ -143,21 +132,34 @@ public class myTools {
      * @param oldCell
      * @param newCell 
      */
-    static void cloneCellValue(Cell oldCell, Cell newCell){
-        System.out.println(oldCell.getCellTypeEnum().toString());
+    static void cloneCellValue(Cell oldCell, Cell newCell, Workbook srcWkBk){
+
+        CellStyle newCellStyle = srcWkBk.createCellStyle();
+        newCellStyle.cloneStyleFrom(oldCell.getCellStyle());
+        newCell.setCellStyle(newCellStyle);
+        
+        //System.out.println(oldCell.getCellTypeEnum().toString());
         try{
             if(oldCell.getCellTypeEnum().toString().equals("STRING")){
                 newCell.setCellValue(oldCell.getStringCellValue());
             } else if(oldCell.getCellTypeEnum().toString().equals("NUMERIC")){
                 newCell.setCellValue(oldCell.getNumericCellValue());
             }else if(oldCell.getCellTypeEnum().toString().equals("FORMULA")){
-                newCell.setCellValue(oldCell.getCellFormula());
+                newCell.setCellType(CellType.FORMULA);
+                newCell.setCellFormula(oldCell.getCellFormula());
+                //System.out.println(oldCell.getCellFormula()+ " other: " + newCell.getCellFormula());
             }
+        }catch(IllegalStateException e){
+            //for some reason oldCell has a String Formula? idk...
+            newCell.setCellType(CellType.FORMULA);
+            newCell.setCellFormula(oldCell.getStringCellValue());
+            e.printStackTrace();
+            System.out.println("Illegal State Exception");
+            System.out.println(oldCell.getStringCellValue());
         }catch(Exception e){
             e.printStackTrace();
             System.out.println("ERR CAUGHT: MyTools cloneCellValue() - data type may not yet be supported");
         }
-        
         //there is a better version of this on stack exchange
     }
     static void fixNames(Sheet weeklyReport){

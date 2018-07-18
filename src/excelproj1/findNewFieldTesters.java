@@ -20,9 +20,9 @@ public class findNewFieldTesters {
 
     public static void main(String[] args) throws IOException, InvalidFormatException {
         Workbook connReport = WorkbookFactory.create(new File("src\\Updated Connectivity Report 05-28-18.xlsx"));
-        Sheet srcSheet = connReport.getSheet("FT Participants");
-        Sheet targSheet = connReport.getSheet("Current Report");
-        myTools.searchColumn(targSheet, 7, 2, 84, srcSheet, 4, 15, 197);
+        Sheet targSheet = connReport.getSheet("FT Participants");
+        Sheet srcSheet = connReport.getSheet("Current Report");
+        myTools.searchColumn(srcSheet, 7, 2, 90, targSheet, 4, 15, 211);
         
     }
 }
