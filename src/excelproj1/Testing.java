@@ -5,9 +5,14 @@
  */
 package excelproj1;
 
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import static javafx.scene.input.KeyCode.M;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.WorkbookFactory;
 
 /**
  *
@@ -16,25 +21,7 @@ import static javafx.scene.input.KeyCode.M;
 public class Testing {
     public static void main(String[] args){
         
-//        System.out.println(26/27);
-//        System.out.println(28/27);
-//        System.out.println(60/27);
-
-        int a = 65;
-        int b = 25+65;
-        int c = 60%27 + 65;
-        
-//        char charA = (char)a;
-//        char charB = (char)b;
-//        char charC = (char)c;
-//        
-//        System.out.println(charA);
-//        System.out.println(charB);
-//        System.out.println(charC);
-        
-        for(int i = 0; i < (26*27); i++){
-            System.out.println("Result: " + indexToLetter(i));
-        }
+        RegistrationReport.executeAutomation(new File("src//Weekly_Reg_Report.csv"), new File("src//YTD_Reg_Report.csv"), new File("src//YTD Updated Registration Report 07-16-18.xlsx"));
     }
     
     public static String indexToLetter(int index){
@@ -57,10 +44,16 @@ public class Testing {
         Date today = new Date();
         SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
         SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
-        StringBuffer buff = new StringBuffer( );
         String month = monthFormat.format(today);
         String day = dayFormat.format(today);
         
         System.out.println(month + " " + day);
+    }
+    
+    private static void findFieldTesters() throws IOException, InvalidFormatException{
+        Workbook connReport = WorkbookFactory.create(new File("src\\Updated Connectivity Report 05-28-18.xlsx"));
+        Sheet targSheet = connReport.getSheet("FT Participants");
+        Sheet srcSheet = connReport.getSheet("Current Report");
+        myTools.searchColumn(srcSheet, 6, 1, 90, targSheet, 3, 14, 211); //i broke this when I tried to get rid of index logic
     }
 }
