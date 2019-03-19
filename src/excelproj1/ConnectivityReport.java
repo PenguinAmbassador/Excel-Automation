@@ -313,17 +313,20 @@ public class ConnectivityReport {
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW4_v453b());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW5_v4551());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW6_v4642());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW7_v4852());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW1_PW3RS017_161005a());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW2_v4310());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW3_v4420());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW4_v453b());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW5_v4551());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW6_v4642());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW7_v4852());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW1_v4310());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW2_v4420());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW3_v453b());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW4_v4551());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW5_v4642());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW6_v4852());
         
         rowIndex++; //skip row
         

@@ -1,1 +1,5 @@
 /dist/
+*.xlsx
+*.csv
+*.xlsx*
+*.csv*

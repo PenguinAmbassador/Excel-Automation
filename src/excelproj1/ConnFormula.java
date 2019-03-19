@@ -56,14 +56,14 @@ class ConnFormula {
         String today = myTools.getDate();
         
         NEW_NIUX_FW = "v4.8-5-2";
-        NEW_GEN2_FW = "PW1RS326"; 
+        NEW_GEN2_FW = "PW1RS329"; 
 
         //I replaced date with a function and I replaced a reference to new fw with a constants 
         FRIDGE_NEW = "COUNTIFS('" + today + "'!$G:$G,\"PW1MA079*\")+COUNTIFS('" + today + "'!$G:$G,\"PW1MA076*\")";
         FRIDGE_OLD = "(COUNTIF('" + today + "'!$G:$G,\"PW1MA*\")+COUNTIF('" + today + "'!$G:$G,\"PW3MA*\"))-" + colLetter + "13";//can potentially replace 13 with param aswell
         RAC_X_NEW = "COUNTIFS('" + today + "'!$G:$G, \"" + NEW_NIUX_FW + "\" ,'" + today + "'!$H:$H,\"FGRC*\")+COUNTIFS('" + today + "'!$G:$G, \"" + NEW_NIUX_FW + "\" ,'" + today + "'!$H:$H,\"FFRE*\")";
         RAC_X_OLD = "(COUNTIFS('" + today + "'!$G:$G,\"v*\",'" + today + "'!$H:$H,\"FGRC*\")+COUNTIFS('" + today + "'!$G:$G,\"PW3RS*\",'" + today + "'!$H:$H,\"FFRE*\"))-" + colLetter + "15";
-        RAC_GEN2_NEW = "COUNTIFS('" + today + "'!$G:$G,\"PW1RS326\",'" + today + "'!$H:$H,\"FGRC*\")+COUNTIFS('" + today + "'!$G:$G,\"PW1RS326\",'" + today + "'!$H:$H,\"FFRE*\")";
+        RAC_GEN2_NEW = "COUNTIFS('" + today + "'!$G:$G,\"" + NEW_GEN2_FW + "\",'" + today + "'!$H:$H,\"FGRC*\")+COUNTIFS('" + today + "'!$G:$G,\"" + NEW_GEN2_FW + "\",'" + today + "'!$H:$H,\"FFRE*\")";
         RAC_GEN2_OLD = "(COUNTIFS('" + today + "'!$G:$G,\"PW1RS*\",'" + today + "'!$H:$H,\"FFRE*\")+COUNTIFS('" + today + "'!$G:$G,\"PW1RS*\",'" + today + "'!$H:$H,\"FGRC*\"))-" + colLetter + "17";
         STROMBO_NEW = "COUNTIFS('" + today + "'!$G:$G, \"" + NEW_NIUX_FW + "\" ,'" + today + "'!$H:$H,\"FGPC*\")";
         STROMBO_OLD = "COUNTIFS('" + today + "'!$H:$H,\"FGPC*\")-" + colLetter + "19";
@@ -104,7 +104,7 @@ class ConnFormula {
         DEHUM_FW4_v4551 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW5_v4642 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW6_v4852 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
-        FW_TOTAL ="SUM(" + colLetter + "41:" + colLetter + (row--) + ")";
+        FW_TOTAL ="SUM(" + colLetter + "41:" + colLetter + (--row) + ")";
 
     }
 
@@ -270,6 +270,26 @@ class ConnFormula {
 
     public String getDEHUM_FW5_v4642() {
         return DEHUM_FW5_v4642;
+    }
+
+    public String getNEW_NIUX_FW() {
+        return NEW_NIUX_FW;
+    }
+
+    public String getNEW_GEN2_FW() {
+        return NEW_GEN2_FW;
+    }
+
+    public String getRAC_FW7_v4852() {
+        return RAC_FW7_v4852;
+    }
+
+    public String getSTROMBO_FW7_v4852() {
+        return STROMBO_FW7_v4852;
+    }
+
+    public String getDEHUM_FW6_v4852() {
+        return DEHUM_FW6_v4852;
     }
 
     public String getFW_TOTAL() {

@@ -126,18 +126,20 @@ public class RegistrationReport {
                 Row targRow = updatedWeeklySheet.createRow(rowStartIndex++);
                 Row srcRow = weeklySrcSheet.getRow(row);
                 //d/System.out.println("Cell: " + srcCell.getStringCellValue());
-                targRow.createCell(6).setCellValue(srcRow.getCell(0).getStringCellValue());
                 
-                Cell srcCell = srcRow.getCell(1);
-                int regAsInt = Integer.parseInt(srcCell.getStringCellValue());
-                srcCell.setCellType(CellType.NUMERIC); //grab reg numbers make sure they're written as a number
-                srcCell.setCellValue(regAsInt);//for some reason setting cell type was changing the value. here's my solution.
-                
-                targRow.createCell(7).setCellValue(srcCell.getNumericCellValue());
+                if(srcRow.getCell(0).getStringCellValue().length() > 0){
+                    targRow.createCell(6).setCellValue(srcRow.getCell(0).getStringCellValue());
 
+                    Cell srcCell = srcRow.getCell(1);
+                    int regAsInt = Integer.parseInt(srcCell.getStringCellValue());
+                    srcCell.setCellType(CellType.NUMERIC); //grab reg numbers make sure they're written as a number
+                    srcCell.setCellValue(regAsInt);//for some reason setting cell type was changing the value. here's my solution.
+
+                    targRow.createCell(7).setCellValue(srcCell.getNumericCellValue());                    
+                }
             }catch(NullPointerException e){
-                e.printStackTrace();
-                System.out.println("unexpected null");
+//                e.printStackTrace();
+                System.out.println("NULL POINTER: unexpected null at rowVar - " + row);
             }
         }
     }
@@ -149,7 +151,7 @@ public class RegistrationReport {
         cumulativeSheet.getRow(1).createCell(firstNullColumn).setCellValue(dateToday);
         for(int row = 2; row < 11; row++){
             //build model formulas, need to change the number to reflect the actual row number, not index
-            cumulativeSheet.getRow(row).createCell(firstNullColumn).setCellFormula("SUMIF('" + dateToday + "'!$B$2:$B$100,($I" + (row + 1) + "&\"*\"),'" + dateToday + "'!$C$2:$C$100)");
+            cumulativeSheet.getRow(row).createCell(firstNullColumn).setCellFormula("SUMIF('" + dateToday + "'!$B$2:$B$100,($I" + (row + 1) + "&\"*\"),'" + dateToday + "'!$C$2:$C$100)-$AV" + (row+1));
         }
         cumulativeSheet.getRow(11).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "11)");
 
@@ -163,6 +165,5 @@ public class RegistrationReport {
         cumulativeSheet.getRow(1).createCell(1).setCellFormula("SUM(" + columnIndex + "6," + columnIndex + "7:" + columnIndex + "10)");
         cumulativeSheet.getRow(2).createCell(1).setCellFormula("SUM(" + columnIndex + "4:" + columnIndex + "5)");
         cumulativeSheet.getRow(3).createCell(1).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "3)");
-        cumulativeSheet.getRow(4).createCell(1).setCellFormula("SUM(" + columnIndex + "11)");
     }
 }

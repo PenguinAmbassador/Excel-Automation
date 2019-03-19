@@ -349,18 +349,16 @@ public class myTools {
         }
     }
     
+    //TODO get ride of over usage by saving variable once on run.
     /**
     * Returns the date in format of "Jul 06"
     * @return 
     */
     public static String getDate(){
         Date today = new Date();
-        SimpleDateFormat monthFormat = new SimpleDateFormat("MMM");
-        SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
-        String month = monthFormat.format(today);
-        String day = dayFormat.format(today);
-
-        return(month + " " + day); 
+        SimpleDateFormat dateFormat = new SimpleDateFormat("MM-dd-yy");
+        String date = dateFormat.format(today);
+        return(date); 
     }
     
     /**
