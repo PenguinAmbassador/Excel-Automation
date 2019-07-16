@@ -13,6 +13,11 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import java.util.Scanner;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,7 +26,13 @@ import org.apache.poi.ss.usermodel.WorkbookFactory;
 public class Testing {
     public static void main(String[] args){
         
-        RegistrationReport.executeAutomation(new File("src//Weekly_Reg_Report.csv"), new File("src//YTD_Reg_Report.csv"), new File("src//YTD Updated Registration Report 07-16-18.xlsx"));
+        //RegistrationReport.executeAutomation(new File("src//Weekly_Reg_Report.csv"), new File("src//YTD_Reg_Report.csv"), new File("src//YTD Updated Registration Report 07-16-18.xlsx"));\
+        
+
+   
+ 
+
+ 
     }
     
     public static String indexToLetter(int index){

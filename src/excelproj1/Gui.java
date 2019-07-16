@@ -13,7 +13,7 @@ import javax.swing.JFileChooser;
  *
  * @author WoodmDav
  */
-public class jFrame extends javax.swing.JFrame {
+public class Gui extends javax.swing.JFrame {
     
     String lastWeek = myTools.getLastWeek();
     boolean useDefaultGO = true;
@@ -28,8 +28,11 @@ public class jFrame extends javax.swing.JFrame {
     /**
      * Creates new form jFrame
      */
-    public jFrame() {
+    public Gui() {
         initComponents();
+        String[] config = myTools.getConfig();
+        jLabelNewNiuxFw.setText(config[0]);
+        jLabelNewGenFw.setText(config[1]);
     }
 
     /**
@@ -48,6 +51,9 @@ public class jFrame extends javax.swing.JFrame {
         jOutputLabel = new javax.swing.JLabel();
         jNewGen2Label = new javax.swing.JLabel();
         jNiuxFWLabel = new javax.swing.JLabel();
+        jLabelNewNiuxFw = new javax.swing.JTextField();
+        jLabelNewGenFw = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -78,60 +84,74 @@ public class jFrame extends javax.swing.JFrame {
             }
         });
 
-        jOutputLabel.setText("Output:");
         jOutputLabel.setVerticalAlignment(javax.swing.SwingConstants.TOP);
 
-        jNewGen2Label.setText("New GEN2 FW");
+        jNewGen2Label.setText("Newest GEN2 FW");
 
-        jNiuxFWLabel.setText("New NIUX FW");
+        jNiuxFWLabel.setText("Newest NIUX FW");
+
+        jLabelNewNiuxFw.setText("jTextField1");
+
+        jLabelNewGenFw.setText("jTextField1");
+
+        jLabel2.setText("Output:");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addGap(51, 51, 51)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jOutputLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jNiuxFWLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jNewGen2Label, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(84, 84, 84)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jLabelNewGenFw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelNewNiuxFw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(247, 247, 247))
+            .addGroup(layout.createSequentialGroup()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(layout.createSequentialGroup()
-                                .addGap(263, 263, 263)
-                                .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 135, Short.MAX_VALUE))
-                            .addGroup(layout.createSequentialGroup()
-                                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(jNewGen2Label, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(jNiuxFWLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 101, javax.swing.GroupLayout.PREFERRED_SIZE))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                                .addComponent(jConnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(55, 55, 55)
-                                .addComponent(jRegButton)
-                                .addGap(37, 37, 37)))
-                        .addComponent(jGoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(50, 50, 50))
+                        .addGap(204, 204, 204)
+                        .addComponent(jConnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 130, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(55, 55, 55)
+                        .addComponent(jRegButton)
+                        .addGap(37, 37, 37)
+                        .addComponent(jGoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 87, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(314, 314, 314)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 135, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addGap(33, 33, 33)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel2)
+                            .addComponent(jOutputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 641, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addGap(33, 33, 33)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 28, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jRegButton, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jConnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(jGoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(68, 68, 68))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jNiuxFWLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(jNewGen2Label, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(69, 69, 69)))
-                .addComponent(jOutputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 192, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(76, Short.MAX_VALUE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jNiuxFWLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelNewNiuxFw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(18, 18, 18)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jNewGen2Label, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabelNewGenFw, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 55, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jRegButton, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jConnButton, javax.swing.GroupLayout.PREFERRED_SIZE, 82, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jGoButton, javax.swing.GroupLayout.PREFERRED_SIZE, 41, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(16, 16, 16)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(jOutputLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 162, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(30, 30, 30))
         );
 
         pack();
@@ -139,7 +159,7 @@ public class jFrame extends javax.swing.JFrame {
 
     private void jConnButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jConnButtonActionPerformed
 
-        JFileChooser filePick = new JFileChooser("src//");
+        JFileChooser filePick = new JFileChooser("src//Resources//");
         
         //WeeklyReport
         filePick.setDialogTitle("Weekly Report");
@@ -161,22 +181,40 @@ public class jFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_jConnButtonActionPerformed
 
     private void jGoButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jGoButtonActionPerformed
-
-        String path = "src//";
+        int r = 0;
+        String path = "src//Resources//NewFiles//";
+        String databasePath = "src//Resources//NewFiles//";
         if(useDefaultGO == true){
             System.out.println("Logic for useDefaults true");
             connReport = new File(path + "Connectivity Report " + lastWeek + ".xlsx");
             updatedRegReport = new File(path + "YTD Updated Registration Report " + lastWeek + ".xlsx");
-            weeklyFT = new File(path + "Weekly_Report.csv");
-            weeklyReg = new File(path + "Weekly_Reg_Report.csv");
-            ytdRegCSV = new File(path + "YTD_Reg_Report.csv");
+            //The next two loops will find a file that is behind or ahead of schedule within 3 weeks
+            for(int i = 0; (i <= 7*3) && (!connReport.exists()); i++){
+                System.out.println("Attempt " + i + ": Searching for missing file");
+                lastWeek = myTools.getLastWeek(i);
+                connReport = new File(path + "Connectivity Report " + lastWeek + ".xlsx");
+                updatedRegReport = new File(path + "YTD Updated Registration Report " + lastWeek + ".xlsx");
+            }
+            for(int i = 0; (i >= (-7*3)) && (!connReport.exists()); i--){
+                System.out.println("Attempt " + i + ": Searching for missing file");
+                lastWeek = myTools.getLastWeek(i);
+                connReport = new File(path + "Connectivity Report " + lastWeek + ".xlsx");
+                updatedRegReport = new File(path + "YTD Updated Registration Report " + lastWeek + ".xlsx");
+            }
+            weeklyFT = new File(databasePath + "Weekly_Report.csv");
+            weeklyReg = new File(databasePath + "Weekly_Reg_Report.csv");
+            ytdRegCSV = new File(databasePath + "YTD_Reg_Report.csv");
         } else {
             System.out.println("Logic for useDefaults false");
         }
-        ConnectivityReport.executeAutomation(weeklyFT, connReport);
-        jOutputLabel.setText(jOutputLabel.getText() + "\n\tConnectivity Report Success");
+        String nFW = jLabelNewNiuxFw.getText();
+        String gFW = jLabelNewGenFw.getText();
+        ConnectivityReport connObj = new ConnectivityReport(weeklyFT, connReport, this, nFW, gFW);
+        
+        
+        jOutputLabel.setText("<html>Connectivity Report Success</html>");
         RegistrationReport.executeAutomation(weeklyReg, ytdRegCSV, updatedRegReport);
-        jOutputLabel.setText(jOutputLabel.getText() + "\n\tRegistration Report Success");
+        jOutputLabel.setText("<html>Connectivity Report Success<br/>     Registration Report Success</html>");
     }//GEN-LAST:event_jGoButtonActionPerformed
 
     private void jRegButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jRegButtonActionPerformed
@@ -227,20 +265,21 @@ public class jFrame extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(jFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(jFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(jFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(jFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(Gui.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
         //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new jFrame().setVisible(true);
+                new Gui().setVisible(true);
             }
         });
     }
@@ -249,6 +288,9 @@ public class jFrame extends javax.swing.JFrame {
     private javax.swing.JButton jConnButton;
     private javax.swing.JButton jGoButton;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JTextField jLabelNewGenFw;
+    private javax.swing.JTextField jLabelNewNiuxFw;
     private javax.swing.JLabel jNewGen2Label;
     private javax.swing.JLabel jNiuxFWLabel;
     private javax.swing.JLabel jOutputLabel;

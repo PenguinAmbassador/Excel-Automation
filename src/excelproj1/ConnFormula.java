@@ -35,6 +35,7 @@ class ConnFormula {
     private String RAC_FW5_v4551;
     private String RAC_FW6_v4642;
     private String RAC_FW7_v4852;
+    private String RAC_FW8_v49653;
     private String STROMBO_FW1_PW3RS017_161005a;
     private String STROMBO_FW2_v4310;
     private String STROMBO_FW3_v4420;
@@ -42,22 +43,23 @@ class ConnFormula {
     private String STROMBO_FW5_v4551;
     private String STROMBO_FW6_v4642;
     private String STROMBO_FW7_v4852;
+    private String STROMBO_FW8_v49653;
     private String DEHUM_FW2_v4420;
     private String DEHUM_FW4_v4551;
     private String DEHUM_FW3_v453b;
     private String DEHUM_FW1_v4310;
     private String DEHUM_FW5_v4642;
     private String DEHUM_FW6_v4852;
+    private String DEHUM_FW7_v49653;
     private String FW_TOTAL;
     
-    ConnFormula(int index){
+    ConnFormula(int index, String niuxFW, String gen2FW){
         
         String colLetter = myTools.indexToLetter(index);//represents turning column index 0 into A, column 26 into AA, and so forth
         String today = myTools.getDate();
-        
-        NEW_NIUX_FW = "v4.8-5-2";
-        NEW_GEN2_FW = "PW1RS329"; 
-
+                
+        NEW_NIUX_FW = niuxFW;
+        NEW_GEN2_FW = gen2FW; 
         //I replaced date with a function and I replaced a reference to new fw with a constants 
         FRIDGE_NEW = "COUNTIFS('" + today + "'!$G:$G,\"PW1MA079*\")+COUNTIFS('" + today + "'!$G:$G,\"PW1MA076*\")";
         FRIDGE_OLD = "(COUNTIF('" + today + "'!$G:$G,\"PW1MA*\")+COUNTIF('" + today + "'!$G:$G,\"PW3MA*\"))-" + colLetter + "13";//can potentially replace 13 with param aswell
@@ -75,12 +77,13 @@ class ConnFormula {
         STROMBO_TOTAL = "SUM(" + colLetter + "$19:" + colLetter + "$20)";
         DEHUM_TOTAL = "" + colLetter + "21+" + colLetter + "22";
        
-        TARGET = "$A$68";
+        TARGET = "$A$72";
         TOTAL = "SUM(" + colLetter + "$25:" + colLetter + "$28)";
        
         OLDFW_TOTAL = "SUM(" + colLetter + "$14," + colLetter + "$16," + colLetter + "$18," + colLetter + "$20," + colLetter + "$22)";
         NEWFW_TOTAL = "SUM(" + colLetter + "$13," + colLetter + "$15," + colLetter + "$17," + colLetter + "$19," + colLetter + "$21)";
 
+        //TODO this can obviously can be made into a method... can the rest?
         int row = 41;
         FRIDGE_FW1_PW1MA076 = "COUNTIFS('" + today + "'!$G:$G, $I" + row++ + "&\"*\")";
         FRIDGE_FW2_PW1MA079 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\")";
@@ -91,6 +94,7 @@ class ConnFormula {
         RAC_FW5_v4551 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGRC\"&\"*\")";
         RAC_FW6_v4642 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGRC\"&\"*\")";
         RAC_FW7_v4852 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGRC\"&\"*\")";
+        RAC_FW8_v49653 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGRC\"&\"*\")";
         STROMBO_FW1_PW3RS017_161005a = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
         STROMBO_FW2_v4310 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
         STROMBO_FW3_v4420 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
@@ -98,14 +102,28 @@ class ConnFormula {
         STROMBO_FW5_v4551 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
         STROMBO_FW6_v4642 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
         STROMBO_FW7_v4852 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
+        STROMBO_FW8_v49653 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGPC\"&\"*\")";
         DEHUM_FW1_v4310 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW2_v4420 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW3_v453b = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW4_v4551 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW5_v4642 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         DEHUM_FW6_v4852 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
+        DEHUM_FW7_v49653 = "COUNTIFS('" + today + "'!$G:$G,$I" + row++ + "&\"*\", '" + today + "'!$H:$H, \"FGAC\"&\"*\")";
         FW_TOTAL ="SUM(" + colLetter + "41:" + colLetter + (--row) + ")";
 
+    }
+
+    public String getRAC_FW8_v49653() {
+        return RAC_FW8_v49653;
+    }
+
+    public String getSTROMBO_FW8_v49653() {
+        return STROMBO_FW8_v49653;
+    }
+
+    public String getDEHUM_FW7_v49653() {
+        return DEHUM_FW7_v49653;
     }
 
     public void setNEW_NIUX_FW(String NEW_NIUX_FW) {

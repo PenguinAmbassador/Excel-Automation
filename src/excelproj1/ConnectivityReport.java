@@ -22,14 +22,24 @@ import org.apache.poi.openxml4j.util.ZipSecureFile;
  */
 public class ConnectivityReport {
     
-    public static void executeAutomation(File weeklyFT, File connReport){
+    
+    public String NEW_NIUX_FW;
+    public String NEW_GEN2_FW;
+    
+    ConnectivityReport(File weeklyFT, File connReport, Gui gui, String niuxFW, String gen2FW){        
+        this.NEW_NIUX_FW = niuxFW;
+        this.NEW_GEN2_FW = gen2FW;
+        executeAutomation(weeklyFT, connReport);
+    }
+    
+    public void executeAutomation(File weeklyFT, File connReport){
         try {
             System.out.println("Setting up Connectivity Report");
             ZipSecureFile.setMinInflateRatio(0);//prevented a zip error
             XSSFWorkbook connectivityWorkbook = new XSSFWorkbook(connReport);//Obtain a Connectivity Report from xlsx; this report should be a week older than the weekly report
-            myTools.csvToXLSX(weeklyFT, "src\\", "Weekly_Report.xlsx");//csv files must be converted to xlsx
-            XSSFWorkbook weeklyWorkbook = new XSSFWorkbook(new File("src\\Weekly_Report.xlsx"));//Obtain Weekly Report. Used to build Connectivity Report.
-            connectivityWorkbook.setForceFormulaRecalculation(true);//recalculate all formuals upon opening
+            myTools.csvToXLSX(weeklyFT, "src//Resources//DatabaseRecords//", "Weekly_Report" + myTools.getWeek() + ".xlsx");//csv files must be converted to xlsx
+            XSSFWorkbook weeklyWorkbook = new XSSFWorkbook(new File("src//Resources//DatabaseRecords//Weekly_Report" + myTools.getWeek() + ".xlsx"));//Obtain Weekly Report. Used to build Connectivity Report.
+            connectivityWorkbook.setForceFormulaRecalculation(true);//recalculate all formulas upon opening
             
             //Establish old week and new week to prepare to copy headers
             connectivityWorkbook.createSheet(myTools.getDate());//getDate() gives you Jul 07 or something like it
@@ -56,9 +66,13 @@ public class ConnectivityReport {
 
 
             System.out.print("Report Complete! Saving...");
-            // Write the output to the file
-            FileOutputStream fileOut = new FileOutputStream("Connectivity Report " + myTools.getWeek() + ".xlsx");
+            // Write the output to the file            
+            
+            FileOutputStream fileOut = new FileOutputStream("src//Resources//Reports//Connectivity Report " + myTools.getWeek() + ".xlsx");
+            FileOutputStream tempFileOut = new FileOutputStream("src//Resources//NewFiles//Connectivity Report " + myTools.getWeek() + ".xlsx");
+            
             connectivityWorkbook.write(fileOut);
+            connectivityWorkbook.write(tempFileOut);
             connectivityWorkbook.close(); // Closing the workbook
             System.out.println(" Saved!\n");
             
@@ -195,7 +209,7 @@ public class ConnectivityReport {
         }
     }
     
-    private static void buildGeneratedReport(Workbook connReport){
+    private void buildGeneratedReport(Workbook connReport){
         Sheet genRep = connReport.getSheet("Generated Report");//store generated report
         
         //4.1: GET COL INDEX
@@ -219,7 +233,7 @@ public class ConnectivityReport {
         }
         
         //4.2 COPY column over
-        ConnFormula form = new ConnFormula(newColIndex);
+        ConnFormula form = new ConnFormula(newColIndex, NEW_NIUX_FW, NEW_GEN2_FW);
         int rowIndex = 11;
         targRow = genRep.getRow(rowIndex);
         rowIndex++;
@@ -314,6 +328,7 @@ public class ConnectivityReport {
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW5_v4551());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW6_v4642());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW7_v4852());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW8_v49653());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW1_PW3RS017_161005a());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW2_v4310());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW3_v4420());
@@ -321,12 +336,14 @@ public class ConnectivityReport {
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW5_v4551());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW6_v4642());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW7_v4852());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW8_v49653());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW1_v4310());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW2_v4420());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW3_v453b());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW4_v4551());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW5_v4642());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW6_v4852());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW7_v49653());
         
         rowIndex++; //skip row
         

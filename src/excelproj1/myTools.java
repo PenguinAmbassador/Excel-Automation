@@ -2,12 +2,16 @@ package excelproj1;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import static java.util.Objects.isNull;
+import java.util.Scanner;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.usermodel.Row.MissingCellPolicy;
@@ -363,11 +367,12 @@ public class myTools {
     
     /**
     * Returns the date of last week in the form of "07-16-18"
+    * @param daysBehind If the report is late, then this amount of days will help find the offset
     * @return 
     */
-    public static String getLastWeek(){
+    public static String getLastWeek(int daysBehind){
         long DAY_IN_MS = 1000 * 60 * 60 * 24;
-        Date lastWeek = new Date(System.currentTimeMillis() - (7 * DAY_IN_MS));
+        Date lastWeek = new Date(System.currentTimeMillis() - ((7 + daysBehind) * DAY_IN_MS));
         SimpleDateFormat monthFormat = new SimpleDateFormat("MM");
         SimpleDateFormat dayFormat = new SimpleDateFormat("dd");
         SimpleDateFormat yearFormat = new SimpleDateFormat("YY");
@@ -377,6 +382,11 @@ public class myTools {
         
         return(month + "-" + day + "-" + year); 
     }
+    
+    public static String getLastWeek(){
+        return getLastWeek(0);
+    }
+    
     /**
     * Returns the date of last week in the form of "07-16-18"
     * @return 
@@ -391,5 +401,22 @@ public class myTools {
         String year = yearFormat.format(lastWeek);
         
         return(month + "-" + day + "-" + year); 
+    }
+    
+    public static String[] getConfig(){
+        String[] result = new String[2];
+        try {
+            Scanner scanner;
+            scanner = new Scanner(new File("src//Resources//config.txt"));            
+            String str = scanner.nextLine();
+            result[0] = str;
+            System.out.println(str);
+            str = scanner.nextLine();
+            result[1] = str;
+            System.out.println(str);            
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Testing.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return result;
     }
 }

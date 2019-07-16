@@ -30,11 +30,11 @@ public class RegistrationReport {
             String dateToday = myTools.getDate();
 //            ZipSecureFile.setMinInflateRatio(0);
             
-            myTools.csvToXLSX(weeklyRegReport, "src\\", "Weekly_Reg_Report.xlsx");
-            myTools.csvToXLSX(ytdRegCSV, "src\\", "YTD_Reg_Report.xlsx");
+            myTools.csvToXLSX(weeklyRegReport, "src//Resources//DatabaseRecords//", "Weekly_Reg_Report" + myTools.getWeek() + ".xlsx");
+            myTools.csvToXLSX(ytdRegCSV, "src//Resources//DatabaseRecords//", "YTD_Reg_Report" + myTools.getWeek() + ".xlsx");
             XSSFWorkbook regReport = new XSSFWorkbook(updatedRegReport);
-            XSSFWorkbook weeklyReg = new XSSFWorkbook(new File("src\\Weekly_Reg_Report.xlsx"));
-            XSSFWorkbook YTDReg = new XSSFWorkbook(new File("src\\YTD_Reg_Report.xlsx"));
+            XSSFWorkbook weeklyReg = new XSSFWorkbook(new File("src//Resources//DatabaseRecords//Weekly_Reg_Report" + myTools.getWeek() + ".xlsx"));
+            XSSFWorkbook YTDReg = new XSSFWorkbook(new File("src//Resources//DatabaseRecords//YTD_Reg_Report" + myTools.getWeek() + ".xlsx"));
 
             //idk if i need the next line
             regReport.setForceFormulaRecalculation(true);//recalculate all formuals upon opening
@@ -67,8 +67,10 @@ public class RegistrationReport {
 
             //save
             System.out.print("Registration Report Complete! Saving...");
-            FileOutputStream fileOut = new FileOutputStream("YTD Updated Registration Report " + myTools.getWeek() + ".xlsx");
+            FileOutputStream fileOut = new FileOutputStream("src//Resources//Reports//YTD Updated Registration Report " + myTools.getWeek() + ".xlsx");
+            FileOutputStream tempFileOut = new FileOutputStream("src//Resources//NewFiles//YTD Updated Registration Report " + myTools.getWeek() + ".xlsx");
             regReport.write(fileOut);
+            regReport.write(tempFileOut);
             regReport.close();
             System.out.println(" Saved!");
             
@@ -117,7 +119,7 @@ public class RegistrationReport {
     
     private static void updateWeekly(Sheet updatedWeeklySheet, Sheet weeklySrcSheet){
         //look for the last row with data in it, and get the index
-        int rowStartIndex = (myTools.findFirstNullRow(updatedWeeklySheet, 7))-1; //subtract 1 to override one day of the previous week
+        int rowStartIndex = (myTools.findFirstNullRow(updatedWeeklySheet, 7)); //subtract 1 to override one day of the previous week
 
         for(int row = 8; row > 0; row--){//grab from weekly.xlsx and leave out header
             try{
@@ -149,21 +151,25 @@ public class RegistrationReport {
         int firstNullColumn = myTools.findFirstNullColumn(cumulativeSheet, 1);
         String columnIndex = myTools.indexToLetter(firstNullColumn);
         cumulativeSheet.getRow(1).createCell(firstNullColumn).setCellValue(dateToday);
-        for(int row = 2; row < 11; row++){
+        int row;
+        for(row = 2; row < 14; row++){
             //build model formulas, need to change the number to reflect the actual row number, not index
-            cumulativeSheet.getRow(row).createCell(firstNullColumn).setCellFormula("SUMIF('" + dateToday + "'!$B$2:$B$100,($I" + (row + 1) + "&\"*\"),'" + dateToday + "'!$C$2:$C$100)-$AV" + (row+1));
+            cumulativeSheet.getRow(row).createCell(firstNullColumn).setCellFormula("SUMIF('" + dateToday + "'!$B$2:$B$100,($I" + (row + 1) + "&\"*\"),'" + dateToday + "'!$C$2:$C$100)");
         }
-        cumulativeSheet.getRow(11).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "11)");
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellValue("0");
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "15)");
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellFormula("'" + dateToday + "'!$C40");
 
-        //skip row
-        cumulativeSheet.getRow(14).createCell(firstNullColumn).setCellValue(dateToday);
-        cumulativeSheet.getRow(15).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "6," + columnIndex + "7:" + columnIndex + "10)");
-        cumulativeSheet.getRow(16).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "4:" + columnIndex + "5)");
-        cumulativeSheet.getRow(17).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "3)");
-        cumulativeSheet.getRow(18).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "11)");
+        row++;//skip row
+        
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellValue(dateToday);
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "6:" + columnIndex + "14)");
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "4:" + columnIndex + "5)");
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "3)");
+        cumulativeSheet.getRow(row++).createCell(firstNullColumn).setCellFormula("SUM(" + columnIndex + "15)");
         //percent values at B2:B5
-        cumulativeSheet.getRow(1).createCell(1).setCellFormula("SUM(" + columnIndex + "6," + columnIndex + "7:" + columnIndex + "10)");
-        cumulativeSheet.getRow(2).createCell(1).setCellFormula("SUM(" + columnIndex + "4:" + columnIndex + "5)");
-        cumulativeSheet.getRow(3).createCell(1).setCellFormula("SUM(" + columnIndex + "3:" + columnIndex + "3)");
+        cumulativeSheet.getRow(1).createCell(1).setCellFormula(columnIndex + "20");
+        cumulativeSheet.getRow(2).createCell(1).setCellFormula(columnIndex + "21");
+        cumulativeSheet.getRow(3).createCell(1).setCellFormula(columnIndex + "22");
     }
 }
