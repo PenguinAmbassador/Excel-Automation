@@ -189,13 +189,13 @@ public class Gui extends javax.swing.JFrame {
             connReport = new File(path + "Connectivity Report " + lastWeek + ".xlsx");
             updatedRegReport = new File(path + "YTD Updated Registration Report " + lastWeek + ".xlsx");
             //The next two loops will find a file that is behind or ahead of schedule within 3 weeks
-            for(int i = 0; (i <= 7*3) && (!connReport.exists()); i++){
+            for(int i = 0; (i >= (-7*3)) && (!connReport.exists()); i--){
                 System.out.println("Attempt " + i + ": Searching for missing file");
                 lastWeek = myTools.getLastWeek(i);
                 connReport = new File(path + "Connectivity Report " + lastWeek + ".xlsx");
                 updatedRegReport = new File(path + "YTD Updated Registration Report " + lastWeek + ".xlsx");
             }
-            for(int i = 0; (i >= (-7*3)) && (!connReport.exists()); i--){
+            for(int i = 0; (i <= 7*3) && (!connReport.exists()); i++){
                 System.out.println("Attempt " + i + ": Searching for missing file");
                 lastWeek = myTools.getLastWeek(i);
                 connReport = new File(path + "Connectivity Report " + lastWeek + ".xlsx");
