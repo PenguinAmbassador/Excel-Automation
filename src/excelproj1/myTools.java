@@ -152,7 +152,29 @@ public class myTools {
     //You should plug in sheet.getPhysicalNumberOfRows as rowEndIndex if you want to iterate all rows.
     //ultimately a useless method... there is already a shift method in poi
     public static void shiftColumns(Workbook workbook, Sheet sheet, int cellIndex, int rowStartIndex, int rowEndIndex, int shiftCount) {
-        for(int i = rowStartIndex; i < rowEndIndex; i++){//This should iterate through rows specified by parameters
+        for(int i = rowStartIndex; i <= rowEndIndex; i++){//This should iterate through rows specified by parameters
+            Row currentRow = sheet.getRow(i);
+            if(shiftCount > 0){//if shiftCount is positive push right
+                for (int j = currentRow.getPhysicalNumberOfCells()-1;j>=cellIndex;j--){//iterate starting on the right and push cells right
+                    Cell oldCell = currentRow.getCell(j);
+                    //First line creates cell, second line copies old cell into new cell
+                    Cell newCell = currentRow.createCell(j + shiftCount);//let it be noted that I removed second argument oldCell.getCellTypeEnum()
+                    
+                    if(oldCell != null){
+                        cloneCellValue(oldCell, newCell, workbook);
+                    }
+                }
+            }else{//if shiftCount is negative push left
+                //TODO create loop to push cells left
+                System.out.println("You are trying to push cells left, right? Sorry, that code doesn't exist at the moment!");
+            }
+        }
+    }
+    //You should plug in sheet.getPhysicalNumberOfRows as rowEndIndex if you want to iterate all rows.
+    //ultimately a useless method... there is already a shift method in poi
+    public static void shiftRows(Workbook workbook, Sheet sheet, int cellIndex, int colStartIndex, int rowEndIndex, int shiftCount) {
+       
+        for(int i = colStartIndex; i <= rowEndIndex; i++){//This should iterate through rows specified by parameters
             Row currentRow = sheet.getRow(i);
             if(shiftCount > 0){//if shiftCount is positive push right
                 for (int j = currentRow.getPhysicalNumberOfCells()-1;j>=cellIndex;j--){//iterate starting on the right and push cells right
@@ -308,13 +330,11 @@ public class myTools {
             } else if(oldCell.getCellTypeEnum().toString().equals("NUMERIC")){
                 newCell.setCellValue(oldCell.getNumericCellValue());
             }else if(oldCell.getCellTypeEnum().toString().equals("FORMULA")){
-                newCell.setCellType(CellType.FORMULA);
                 newCell.setCellFormula(oldCell.getCellFormula());
                 //System.out.println(oldCell.getCellFormula()+ " other: " + newCell.getCellFormula());
             }
         }catch(IllegalStateException e){
             //for some reason oldCell had a String Formula? Setting cell type got rid of this error.
-            newCell.setCellType(CellType.FORMULA);
             newCell.setCellFormula(oldCell.getStringCellValue());
             e.printStackTrace();
             System.out.println("Illegal State Exception");
@@ -324,7 +344,7 @@ public class myTools {
             System.out.println("ERR CAUGHT: MyTools cloneCellValue() - data type may not yet be supported");
         }
         //there is a better version of this on stack exchange
-    }
+    }    
     static void fixNames(Sheet weeklyReport){
         String firstName = "";
         String lastName = "";
@@ -419,4 +439,4 @@ public class myTools {
         }
         return result;
     }
-}
+        }

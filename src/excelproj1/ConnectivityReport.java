@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.apache.poi.openxml4j.util.ZipSecureFile;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 
 /**
  * TODO: VERIFY TOTALS, ADD FORMULA OPTION TO GUI?
@@ -44,10 +45,10 @@ public class ConnectivityReport {
             //Establish old week and new week to prepare to copy headers
             connectivityWorkbook.createSheet(myTools.getDate());//getDate() gives you Jul 07 or something like it
             connectivityWorkbook.setSheetOrder(myTools.getDate(), 4);//move new sheet in front of other weeks
-            Sheet newWeekSheet = connectivityWorkbook.getSheetAt(4);//grab the new sheet
-            Sheet lastWeekSheet = connectivityWorkbook.getSheetAt(5);//grab previous week
-            Sheet weeklySheet = weeklyWorkbook.getSheetAt(0);//Grab the only sheet in Weekly Report
-            Sheet currentWeekSheet = connectivityWorkbook.getSheet("Current Report");
+            XSSFSheet newWeekSheet = connectivityWorkbook.getSheetAt(4);//grab the new sheet
+            XSSFSheet lastWeekSheet = connectivityWorkbook.getSheetAt(5);//grab previous week
+            XSSFSheet weeklySheet = weeklyWorkbook.getSheetAt(0);//Grab the only sheet in Weekly Report
+            XSSFSheet currentWeekSheet = connectivityWorkbook.getSheet("Current Report");
             
             
             System.out.println("Step One: New Week Sheet");
@@ -68,11 +69,12 @@ public class ConnectivityReport {
             System.out.print("Report Complete! Saving...");
             // Write the output to the file            
             
-            FileOutputStream fileOut = new FileOutputStream("src//Resources//Reports//Connectivity Report " + myTools.getWeek() + ".xlsx");
+//            FileOutputStream fileOut = new FileOutputStream("src//Resources//Reports//Connectivity Report " + myTools.getWeek() + ".xlsx");
             FileOutputStream tempFileOut = new FileOutputStream("src//Resources//NewFiles//Connectivity Report " + myTools.getWeek() + ".xlsx");
             
-            connectivityWorkbook.write(fileOut);
+//            connectivityWorkbook.write(fileOut);
             connectivityWorkbook.write(tempFileOut);
+            tempFileOut.close();
             connectivityWorkbook.close(); // Closing the workbook
             System.out.println(" Saved!\n");
             
@@ -148,7 +150,7 @@ public class ConnectivityReport {
     
     private static void newFieldTrialColumn(Workbook connReport, Sheet currentReport){
         Sheet ftSheet = connReport.getSheet("FT Participants");
-        myTools.shiftColumns(connReport, ftSheet, 7, 23, ftSheet.getPhysicalNumberOfRows(), 1);//TODO this line corrupts data is there are blanks while shifting
+        myTools.shiftColumns(connReport, ftSheet, 7, 23, ftSheet.getPhysicalNumberOfRows()-1, 1);//TODO this line corrupts data is there are blanks while shifting
         
         //Time to make new column
         ftSheet.getRow(23).getCell(7).setCellValue(myTools.getDate()); //setdate
@@ -209,33 +211,51 @@ public class ConnectivityReport {
         }
     }
     
-    private void buildGeneratedReport(Workbook connReport){
-        Sheet genRep = connReport.getSheet("Generated Report");//store generated report
+    private void buildGeneratedReport(XSSFWorkbook connReport){
+        XSSFSheet genRep = connReport.getSheet("Generated Report");//store generated report
         
-        //4.1: GET COL INDEX
-        int newColIndex = 0;
-        Row targRow = genRep.getRow(12);// row index 8 is where the data tables start
-        //Going to count down from the end of the row moving to the left until I hit a formula.
-        //Once I don't have any errors, then that means I am on the last column and can add a new column to the right
-        for(int col = targRow.getPhysicalNumberOfCells()+50; col >= 0; col--){
-            try{
-                //System.out.println("check1: " + col);
-                Cell targCell = targRow.getCell(col);
-                String checkForm = targCell.getCellFormula();
-                //d/System.out.println(checkForm);
-            if(checkForm.length() > 0){
-                newColIndex = col + 1;
-                col = -1;//stop loop
-            }
-            }catch(Exception NullPointerException){
-                //null cell
-            }
-        }
+//        //4.1: GET COL INDEX
+//        int newColIndex = 0;
+//        Row targRow = genRep.getRow(12);// row index 8 is where the data tables start
+//        //Going to count down from the end of the row moving to the left until I hit a formula.
+//        //Once I don't have any errors, then that means I am on the last column and can add a new column to the right
+//        for(int col = targRow.getPhysicalNumberOfCells()+50; col >= 0; col--){
+//            try{
+//                //System.out.println("check1: " + col);
+//                Cell targCell = targRow.getCell(col);
+//                String checkForm = targCell.getCellFormula();
+//                //d/System.out.println(checkForm);
+//            if(checkForm.length() > 0){
+//                newColIndex = col + 1;
+//                col = -1;//stop loop
+//            }
+//            }catch(Exception NullPointerException){
+//                //null cell
+//            }
+//        }
+        
+        int newColIndex = 9;
+        
+        int rowStart = 11;
+        int rowEnd = 23;
+//        
+//        myTools.shiftColumns(connReport, genRep, newColIndex, rowStart, rowEnd, 1);   //newColIndex, genRep.getRow(11), 1);
+//        myTools.shiftColumns(connReport, genRep, newColIndex, 29, 30, 1); 
+//        myTools.shiftColumns(connReport, genRep, newColIndex, 33, 35, 1); 
+//        myTools.shiftColumns(connReport, genRep, newColIndex, 39, 64, 1); 
+
+        genRep.shiftColumns(newColIndex, genRep.getRow(15).getPhysicalNumberOfCells(), 1);
+
+//        myTools.shiftColumns( genRep, newColIndex, rowStart, rowEnd, 1);   //newColIndex, genRep.getRow(11), 1);
+//        myTools.shiftColumns(genRep.getRow(i), newColIndex, 1
+//        )newColIndex, 29, 30, 1); 
+//        myTools.shiftColumns(connReport, genRep, newColIndex, 33, 35, 1); 
+//        myTools.shiftColumns(connReport, genRep, newColIndex, 39, 64, 1); 
         
         //4.2 COPY column over
         ConnFormula form = new ConnFormula(newColIndex, NEW_NIUX_FW, NEW_GEN2_FW);
         int rowIndex = 11;
-        targRow = genRep.getRow(rowIndex);
+        Row targRow = genRep.getRow(rowIndex);
         rowIndex++;
         targRow.createCell(newColIndex).setCellValue(myTools.getDate());
         targRow = genRep.getRow(rowIndex);
@@ -308,14 +328,14 @@ public class ConnectivityReport {
         rowIndex++;//skip row
         
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getTOTAL());
-        
+
         rowIndex++; //skip row  
         rowIndex++;
         
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellValue(myTools.getDate());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getOLDFW_TOTAL());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getNEWFW_TOTAL());
-        
+
         rowIndex++;//skip row
         
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellValue(myTools.getDate());
@@ -329,6 +349,7 @@ public class ConnectivityReport {
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW6_v4642());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW7_v4852());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW8_v49653());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getRAC_FW9_v4107());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW1_PW3RS017_161005a());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW2_v4310());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW3_v4420());
@@ -337,6 +358,7 @@ public class ConnectivityReport {
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW6_v4642());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW7_v4852());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW8_v49653());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getSTROMBO_FW9_v4107());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW1_v4310());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW2_v4420());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW3_v453b());
@@ -344,6 +366,7 @@ public class ConnectivityReport {
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW5_v4642());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW6_v4852());
         genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW7_v49653());
+        genRep.getRow(rowIndex++).createCell(newColIndex).setCellFormula(form.getDEHUM_FW8_v4107());
         
         rowIndex++; //skip row
         
