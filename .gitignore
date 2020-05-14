@@ -3,7 +3,6 @@
 *.csv
 *.xlsx*
 *.csv*
-src/Resources/
 build/
 nbbuild/
 nbdist/
